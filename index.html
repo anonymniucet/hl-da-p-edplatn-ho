@@ -237,6 +237,7 @@
 <div id="modalRoot"></div>
 
 <script src="config.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
@@ -251,6 +252,7 @@ const CATEGORIES = [
   { id:'fitness',    label:'Fitness',          color:'#7FA98D' },
   { id:'hry',        label:'Hry',              color:'#E8A33D' },
   { id:'cloud',      label:'Cloud a úložiště', color:'#7FB3D5' },
+  { id:'vpn',        label:'VPN a bezpečnost', color:'#4C8577' },
   { id:'pojisteni',  label:'Pojištění',        color:'#9AA5AE' },
   { id:'ostatni',    label:'Ostatní',          color:'#B0A695' },
 ];
@@ -261,6 +263,18 @@ const CYCLES = [
   { id:'weekly',    label:'týdně',      factor:4.345 },
 ];
 const FREE_LIMIT = 5;
+
+/* ============================= AFFILIATE NABÍDKY =============================
+   Uprav si "url" na svoje skutečné affiliate odkazy, až se do programů zaregistruješ.
+   Kategorie odpovídají ID z CATEGORIES výše.
+================================================================================ */
+const AFFILIATE_OFFERS = {
+  streaming: { name:'Levnější streamovací balíček', pitch:'Porovnej kombinované balíčky — často vyjdou levněji než 2–3 služby zvlášť.', url:'#' },
+  vpn:       { name:'Doporučená VPN služba', pitch:'Roční plán bývá výrazně levnější než měsíční platba.', url:'#' },
+  pojisteni: { name:'Srovnání pojištění online', pitch:'Nech si porovnat nabídky víc pojišťoven během pár minut.', url:'#' },
+  fitness:   { name:'Fitness aplikace / permanentka', pitch:'Zvaž appku s cvičením doma místo drahého členství.', url:'#' },
+};
+
 const ICONS = {
   dashboard:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>',
   list:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>',
@@ -279,6 +293,10 @@ const ICONS = {
   download:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>',
   lock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>',
   logout:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>',
+  upload:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>',
+  tag:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41L13.42 20.58a2 2 0 0 1-2.83 0L2.83 12.83a2 2 0 0 1 0-2.83l7.17-7.17A2 2 0 0 1 11.41 2h6.18a2 2 0 0 1 2 2v6.18a2 2 0 0 1-.59 1.41z"/><line x1="7.5" y1="7.5" x2="7.51" y2="7.5"/></svg>',
+  extlink:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>',
+  file:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
 };
 
 /* ============================= STATE ============================= */
@@ -294,6 +312,9 @@ let state = {
   authMode:'signin',
   authError:'',
   authBusy:false,
+  importRows:null,
+  importHeaders:null,
+  importCandidates:[],
 };
 
 function catInfo(id){ return CATEGORIES.find(c=>c.id===id) || CATEGORIES[CATEGORIES.length-1]; }
@@ -470,6 +491,7 @@ function render(){
           ${navItem('dashboard', ICONS.dashboard, 'Přehled')}
           ${navItem('list', ICONS.list, 'Předplatná')}
           ${navItem('notifications', ICONS.bell, 'Upozornění', notifCount)}
+          ${navItem('offers', ICONS.tag, 'Nabídky')}
           ${navItem('settings', ICONS.settings, 'Nastavení')}
         </nav>
         <div class="sidebar-foot">
@@ -499,6 +521,7 @@ function renderView(){
   if(state.view==='dashboard') c.innerHTML = viewDashboard();
   else if(state.view==='list') c.innerHTML = viewList();
   else if(state.view==='notifications') c.innerHTML = viewNotifications();
+  else if(state.view==='offers') c.innerHTML = viewOffers();
   else if(state.view==='settings') c.innerHTML = viewSettings();
   if(state.view==='list') attachListControls();
 }
@@ -601,7 +624,11 @@ function viewDashboard(){
         ${unused.map(s=>`
           <div class="lineitem">
             <div class="stamp" style="background:${catInfo(s.category).color}">${s.name.charAt(0).toUpperCase()}</div>
-            <div style="flex:1;"><div class="li-name">${escapeHTML(s.name)}</div><div class="li-meta">nepoužito ${-daysUntil(s.last_used)} dní</div></div>
+            <div style="flex:1;">
+              <div class="li-name">${escapeHTML(s.name)}</div>
+              <div class="li-meta">nepoužito ${-daysUntil(s.last_used)} dní</div>
+              ${affiliateLine(s.category)}
+            </div>
             <div class="li-price">${fmtMoney(monthlyEq(s))}<small>/měs</small></div>
           </div>`).join('')}
         <div class="card-desc" style="margin-top:10px;">Celkem bys mohl/a ušetřit <b style="color:var(--amber)">${fmtMoney(unused.reduce((a,s)=>a+monthlyEq(s),0))}</b> měsíčně.</div>
@@ -643,7 +670,10 @@ function viewList(){
   return `
     <div class="topbar">
       <div><div class="page-title">Předplatná</div><div class="page-sub">${state.subs.length} celkem ${state.settings.premium?'· Premium (bez limitu)':`· limit ${FREE_LIMIT} ve Free plánu`}</div></div>
-      <button class="btn btn-primary" onclick="window.__app.openAddEdit()">${ICONS.plus} Přidat předplatné</button>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn btn-ghost" onclick="window.__app.openImportModal()">${ICONS.upload} Import z výpisu</button>
+        <button class="btn btn-primary" onclick="window.__app.openAddEdit()">${ICONS.plus} Přidat předplatné</button>
+      </div>
     </div>
     <div class="controls-row">
       <div class="search-wrap">${ICONS.search}<input class="input" id="searchInput" placeholder="Hledat podle názvu…" value="${escapeHTML(state.search)}"></div>
@@ -715,8 +745,45 @@ function viewNotifications(){
       ` : unused.length ? unused.map(s=>`
         <div class="notif">
           <div class="notif-icon" style="background:rgba(217,105,95,0.12); color:var(--coral);">${ICONS.alert}</div>
-          <div><div class="notif-title">${escapeHTML(s.name)} — nepoužito ${-daysUntil(s.last_used)} dní</div><div class="notif-desc">Stojí tě ${fmtMoney(monthlyEq(s))} měsíčně. Zvaž zrušení.</div></div>
+          <div>
+            <div class="notif-title">${escapeHTML(s.name)} — nepoužito ${-daysUntil(s.last_used)} dní</div>
+            <div class="notif-desc">Stojí tě ${fmtMoney(monthlyEq(s))} měsíčně. Zvaž zrušení.</div>
+            ${affiliateLine(s.category)}
+          </div>
         </div>`).join('') : `<div style="color:var(--text-dim); font-size:13px; padding:6px 0;">Zatím nic podezřelého.</div>`}
+    </div>
+  `;
+}
+function affiliateLine(categoryId){
+  const offer = AFFILIATE_OFFERS[categoryId];
+  if(!offer) return '';
+  return `<div style="margin-top:7px; font-size:11.5px; display:flex; align-items:center; gap:7px; flex-wrap:wrap;">
+    <a href="${offer.url}" target="_blank" rel="noopener sponsored" style="color:var(--amber); text-decoration:none; font-weight:600; display:inline-flex; align-items:center; gap:3px;">${escapeHTML(offer.name)}</a>
+    <span style="color:var(--text-faint);">${escapeHTML(offer.pitch)}</span>
+    <span class="li-tag">Reklama</span>
+  </div>`;
+}
+
+/* ============================= OFFERS (AFFILIATE) ============================= */
+function viewOffers(){
+  return `
+    <div class="topbar"><div><div class="page-title">Nabídky</div><div class="page-sub">Pár tipů na alternativy k častým kategoriím výdajů.</div></div></div>
+    <div class="card" style="margin-bottom:18px;">
+      <div class="card-desc" style="margin:0;">Odkazy níže jsou affiliate — pokud přes ně něco pořídíš, appka může dostat provizi. Nijak to nemění cenu pro tebe.</div>
+    </div>
+    <div class="grid-2">
+      ${Object.entries(AFFILIATE_OFFERS).map(([catId, offer])=>`
+        <div class="card">
+          <div style="display:flex; align-items:center; gap:9px; margin-bottom:8px;">
+            <span class="legend-dot" style="background:${catInfo(catId).color}; width:11px; height:11px;"></span>
+            <div class="card-title" style="margin:0;">${catInfo(catId).label}</div>
+          </div>
+          <div class="li-name" style="margin-bottom:4px;">${escapeHTML(offer.name)}</div>
+          <div class="card-desc">${escapeHTML(offer.pitch)}</div>
+          <a href="${offer.url}" target="_blank" rel="noopener sponsored" class="btn btn-ghost btn-sm">${ICONS.extlink} Zobrazit nabídku</a>
+          <span class="li-tag" style="margin-left:8px;">Reklama</span>
+        </div>
+      `).join('')}
     </div>
   `;
 }
@@ -899,6 +966,266 @@ async function togglePremium(on){
   closeModal(); toast(on ? 'Premium aktivováno' : 'Premium zrušeno'); render();
 }
 
+/* ============================= CSV IMPORT (BANKOVNÍ VÝPIS) ============================= */
+function parseAmount(raw){
+  if(typeof raw === 'number') return raw;
+  if(!raw) return NaN;
+  let s = String(raw).trim();
+  s = s.replace(/[^0-9,.\-]/g, '');
+  const lastComma = s.lastIndexOf(',');
+  const lastDot = s.lastIndexOf('.');
+  if(lastComma > -1 && lastDot > -1){
+    if(lastComma > lastDot){ s = s.replace(/\./g,'').replace(',', '.'); }
+    else { s = s.replace(/,/g,''); }
+  } else if(lastComma > -1){
+    s = s.replace(/\./g,'').replace(',', '.');
+  }
+  return parseFloat(s);
+}
+function pad2(n){ return String(n).padStart(2,'0'); }
+function parseFlexDate(raw){
+  if(!raw) return null;
+  const s = String(raw).trim();
+  let m;
+  if((m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/))) return `${m[1]}-${pad2(m[2])}-${pad2(m[3])}`;
+  if((m = s.match(/^(\d{1,2})[.\/](\d{1,2})[.\/](\d{4})/))) return `${m[3]}-${pad2(m[2])}-${pad2(m[1])}`;
+  return null;
+}
+function normDesc(s){
+  return String(s||'')
+    .toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[0-9]/g,' ')
+    .replace(/[^a-z ]/g,' ')
+    .replace(/\s+/g,' ')
+    .trim()
+    .split(' ')
+    .filter(Boolean)
+    .slice(0,3)
+    .join(' ');
+}
+function guessCycleFromDays(avg){
+  if(avg <= 10) return 'weekly';
+  if(avg <= 45) return 'monthly';
+  if(avg <= 120) return 'quarterly';
+  return 'yearly';
+}
+function guessCategoryFromText(text){
+  const t = text.toLowerCase();
+  if(/netflix|spotify|hbo|disney|prime|voyo|oneplay|max\b/.test(t)) return 'streaming';
+  if(/nordvpn|expressvpn|surfshark|vpn/.test(t)) return 'vpn';
+  if(/posilovna|fitness|gym|cvicen/.test(t)) return 'fitness';
+  if(/pojist|pojišt|allianz|generali|kooperativa/.test(t)) return 'pojisteni';
+  if(/icloud|google one|dropbox|onedrive|cloud/.test(t)) return 'cloud';
+  if(/adobe|microsoft|office|notion|figma/.test(t)) return 'software';
+  return 'ostatni';
+}
+
+function openImportModal(){
+  if(typeof Papa === 'undefined'){
+    toast('Knihovna pro čtení CSV se nenačetla — zkontroluj připojení k internetu a zkus obnovit stránku.', true);
+    return;
+  }
+  showModal(`
+    <div class="modal-head"><div class="modal-title">Import z bankovního výpisu</div><button class="icon-btn" onclick="window.__app.closeModal()">${ICONS.x}</button></div>
+    <div class="card-desc" style="margin-bottom:14px;">Nahraj CSV export z internetového bankovnictví. Appka v něm najde platby, které se opakují, a nabídne ti je jako předplatná k přidání. Nic se nikam neposílá — vše se zpracuje jen v tvém prohlížeči.</div>
+    <div class="field">
+      <label>CSV soubor</label>
+      <input class="input" type="file" accept=".csv,text/csv" id="csvFileInput" style="width:100%;">
+    </div>
+    <div id="csvImportError" style="color:var(--coral); font-size:12.5px; margin-top:4px;"></div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-ghost" onclick="window.__app.closeModal()">Zrušit</button>
+    </div>
+  `);
+  document.getElementById('csvFileInput').addEventListener('change', handleImportFileChange);
+}
+
+function handleImportFileChange(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const errEl = document.getElementById('csvImportError');
+  if(errEl) errEl.textContent = '';
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    try{
+      const text = ev.target.result;
+      const parsed = Papa.parse(text, { header:true, skipEmptyLines:true });
+      if(!parsed.data || !parsed.data.length){
+        if(errEl) errEl.textContent = 'V souboru se nepodařilo najít žádné řádky.';
+        return;
+      }
+      state.importRows = parsed.data;
+      state.importHeaders = parsed.meta.fields || Object.keys(parsed.data[0]);
+      renderMappingModal();
+    }catch(err){
+      if(errEl) errEl.textContent = 'Soubor se nepodařilo přečíst — zkontroluj, že je to CSV export.';
+    }
+  };
+  reader.onerror = () => { if(errEl) errEl.textContent = 'Soubor se nepodařilo přečíst.'; };
+  reader.readAsText(file, 'utf-8');
+}
+
+function renderMappingModal(){
+  const headers = state.importHeaders;
+  const guess = (keywords) => headers.find(h => keywords.some(k => h.toLowerCase().includes(k))) || headers[0];
+  const guessDate = guess(['datum','date']);
+  const guessAmount = guess(['částka','castka','objem','amount','suma']);
+  const guessDesc = guess(['popis','protistrana','zpráva','zprava','description','poznámka','poznamka','merchant']);
+  showModal(`
+    <div class="modal-head"><div class="modal-title">Přiřaď sloupce</div><button class="icon-btn" onclick="window.__app.closeModal()">${ICONS.x}</button></div>
+    <div class="card-desc" style="margin-bottom:14px;">Nalezeno ${state.importRows.length} řádků. Ověř, jestli appka správně pozná datum, částku a popis platby.</div>
+    <div class="field"><label>Sloupec s datem</label><select class="select" id="mapDate">${headers.map(h=>`<option value="${escapeHTML(h)}" ${h===guessDate?'selected':''}>${escapeHTML(h)}</option>`).join('')}</select></div>
+    <div class="field"><label>Sloupec s částkou</label><select class="select" id="mapAmount">${headers.map(h=>`<option value="${escapeHTML(h)}" ${h===guessAmount?'selected':''}>${escapeHTML(h)}</option>`).join('')}</select></div>
+    <div class="field"><label>Sloupec s popisem / protistranou</label><select class="select" id="mapDesc">${headers.map(h=>`<option value="${escapeHTML(h)}" ${h===guessDesc?'selected':''}>${escapeHTML(h)}</option>`).join('')}</select></div>
+    <div class="field" style="display:flex; align-items:center; gap:8px;">
+      <input type="checkbox" id="mapFlipSign" style="width:16px;height:16px;">
+      <label style="margin:0;" for="mapFlipSign">Výdaje mám ve výpisu jako kladná čísla</label>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-ghost" onclick="window.__app.closeModal()">Zrušit</button>
+      <button type="button" class="btn btn-primary" onclick="window.__app.confirmMapping()">Najít předplatná</button>
+    </div>
+  `);
+}
+
+function confirmMapping(){
+  const dateCol = document.getElementById('mapDate').value;
+  const amountCol = document.getElementById('mapAmount').value;
+  const descCol = document.getElementById('mapDesc').value;
+  const flip = document.getElementById('mapFlipSign').checked;
+
+  const txns = [];
+  state.importRows.forEach(row=>{
+    const dateStr = parseFlexDate(row[dateCol]);
+    let amount = parseAmount(row[amountCol]);
+    if(isNaN(amount) || !dateStr) return;
+    if(flip) amount = -amount;
+    if(amount >= 0) return;
+    txns.push({ date: dateStr, amount: Math.abs(amount), desc: String(row[descCol]||'').trim() });
+  });
+
+  if(!txns.length){
+    toast('Ve výpisu se nenašly žádné výdaje — zkus zaškrtnout "Výdaje mám jako kladná čísla".', true);
+    return;
+  }
+
+  const groups = {};
+  txns.forEach(t=>{
+    const key = normDesc(t.desc) + '|' + Math.round(t.amount);
+    if(!groups[key]) groups[key] = [];
+    groups[key].push(t);
+  });
+
+  const candidates = [];
+  Object.values(groups).forEach(group=>{
+    if(group.length < 2) return;
+    group.sort((a,b)=> new Date(a.date) - new Date(b.date));
+    const gaps = [];
+    for(let i=1;i<group.length;i++){
+      gaps.push((new Date(group[i].date) - new Date(group[i-1].date)) / 86400000);
+    }
+    const avgGap = gaps.reduce((a,b)=>a+b,0) / gaps.length;
+    const cycle = guessCycleFromDays(avgGap);
+    const last = group[group.length-1];
+    let nextRenewal = addCycle(last.date, cycle);
+    let guard = 0;
+    while(daysUntil(nextRenewal) < 0 && guard < 50){ nextRenewal = addCycle(nextRenewal, cycle); guard++; }
+    const rawDesc = last.desc || 'Neznámá platba';
+    const niceName = rawDesc.split(/\s{2,}|,/)[0].slice(0, 40).trim() || 'Neznámá platba';
+    candidates.push({
+      name: niceName,
+      price: last.amount,
+      cycle,
+      category: guessCategoryFromText(rawDesc),
+      nextRenewal,
+      occurrences: group.length,
+      lastDate: last.date,
+    });
+  });
+
+  if(!candidates.length){
+    toast('Nenašli jsme žádné opakující se platby (potřebujeme aspoň 2 stejné platby).', true);
+    return;
+  }
+  candidates.sort((a,b)=>b.occurrences-a.occurrences);
+  state.importCandidates = candidates;
+  renderReviewModal();
+}
+
+function renderReviewModal(){
+  const remaining = state.settings.premium ? Infinity : Math.max(0, FREE_LIMIT - state.subs.length);
+  showModal(`
+    <div class="modal-head"><div class="modal-title">Nalezená předplatná</div><button class="icon-btn" onclick="window.__app.closeModal()">${ICONS.x}</button></div>
+    <div class="card-desc" style="margin-bottom:10px;">Nalezeno ${state.importCandidates.length} opakujících se plateb. Odškrtni, co nechceš přidat, případně uprav název nebo kategorii.</div>
+    ${!state.settings.premium ? `<div class="demo-note" style="margin-bottom:12px;">Free plán umožňuje max ${FREE_LIMIT} předplatných celkem (aktuálně máš ${state.subs.length}). Můžeš přidat ještě ${remaining}, zbytek odznač nebo přejdi na Premium.</div>` : ''}
+    <div id="importCandList" style="max-height:340px; overflow-y:auto; display:flex; flex-direction:column; gap:10px;">
+      ${state.importCandidates.map((c,i)=>`
+        <div class="card" style="padding:12px 14px;">
+          <div style="display:flex; align-items:flex-start; gap:10px;">
+            <input type="checkbox" class="import-cb" data-idx="${i}" ${i < remaining ? 'checked' : ''} style="width:16px;height:16px;margin-top:6px;">
+            <div style="flex:1; display:flex; flex-direction:column; gap:6px;">
+              <input class="input" data-field="name" data-idx="${i}" value="${escapeHTML(c.name)}" placeholder="Název">
+              <div class="field-row" style="gap:6px;">
+                <input class="input" type="number" step="0.01" data-field="price" data-idx="${i}" value="${c.price}" style="flex:1;">
+                <select class="select" data-field="cycle" data-idx="${i}" style="flex:1;">
+                  ${CYCLES.map(cy=>`<option value="${cy.id}" ${cy.id===c.cycle?'selected':''}>${cy.label}</option>`).join('')}
+                </select>
+                <select class="select" data-field="category" data-idx="${i}" style="flex:1;">
+                  ${CATEGORIES.map(cat=>`<option value="${cat.id}" ${cat.id===c.category?'selected':''}>${cat.label}</option>`).join('')}
+                </select>
+              </div>
+              <div class="li-meta">${c.occurrences}× nalezeno · naposledy ${fmtDate(c.lastDate)}</div>
+            </div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-ghost" onclick="window.__app.closeModal()">Zrušit</button>
+      <button type="button" class="btn btn-primary" onclick="window.__app.confirmImportCandidates()">Přidat vybraná</button>
+    </div>
+  `);
+}
+
+async function confirmImportCandidates(){
+  const checkboxes = Array.from(document.querySelectorAll('.import-cb'));
+  const selectedIdxs = checkboxes.filter(cb=>cb.checked).map(cb=>parseInt(cb.dataset.idx,10));
+  if(!selectedIdxs.length){ toast('Nic není vybráno.', true); return; }
+
+  const remaining = state.settings.premium ? Infinity : Math.max(0, FREE_LIMIT - state.subs.length);
+  if(selectedIdxs.length > remaining){
+    toast(`Free plán dovolí přidat jen ${remaining} dalších — odznač část nebo přejdi na Premium.`, true);
+    return;
+  }
+
+  const toInsert = selectedIdxs.map(i=>{
+    const name = document.querySelector(`[data-field="name"][data-idx="${i}"]`).value.trim() || state.importCandidates[i].name;
+    const price = parseFloat(document.querySelector(`[data-field="price"][data-idx="${i}"]`).value);
+    const cycle = document.querySelector(`[data-field="cycle"][data-idx="${i}"]`).value;
+    const category = document.querySelector(`[data-field="category"][data-idx="${i}"]`).value;
+    const c = state.importCandidates[i];
+    return {
+      user_id: state.user.id,
+      name,
+      price: isNaN(price) ? c.price : price,
+      cycle,
+      category,
+      next_renewal: c.nextRenewal,
+      last_used: null,
+      notes: 'Přidáno importem z bankovního výpisu',
+    };
+  });
+
+  const { data, error } = await supabase.from('subscriptions').insert(toInsert).select();
+  if(error){ toast('Import se nepodařilo uložit.', true); return; }
+  state.subs = state.subs.concat(data);
+  state.importRows = null; state.importHeaders = null; state.importCandidates = [];
+  closeModal();
+  toast(`Přidáno ${data.length} předplatných z výpisu`);
+  render();
+}
+
 /* ============================= MODAL HELPERS ============================= */
 function showModal(html){
   document.getElementById('modalRoot').innerHTML = `<div class="modal-backdrop" onclick="if(event.target===this) window.__app.closeModal()"><div class="modal">${html}</div></div>`;
@@ -910,6 +1237,7 @@ window.__app = {
   setView, openAddEdit, pickCategory, submitSubForm, openDelete, deleteSub,
   openUpgrade, togglePremium, closeModal, saveBudget, exportCSV, confirmWipe,
   wipeAll, signOut, setAuthMode, handleAuthSubmit,
+  openImportModal, confirmMapping, confirmImportCandidates,
 };
 
 initAuth();
