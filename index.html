@@ -3,16 +3,28 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="SubHlídač — přehled všech tvých předplatných na jednom místě. Sleduj měsíční výdaje, dostávej upozornění na blížící se obnovení a najdi předplatná, která už dávno nepoužíváš.">
+<meta name="theme-color" content="#F7F4EE">
+<meta property="og:title" content="SubHlídač — přehled předplatných">
+<meta property="og:description" content="Zjisti, kolik měsíčně utrácíš za předplatná, a nezapomeň zrušit ta, co nepoužíváš.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="banner.svg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="banner.svg">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23C17F2A'/%3E%3Cstop offset='1' stop-color='%23B84B3D'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='48' fill='url(%23g)'/%3E%3Ctext x='50' y='68' font-size='58' font-family='Georgia,serif' font-weight='700' text-anchor='middle' fill='%23211D17'%3ES%3C/text%3E%3C/svg%3E">
 <title>SubHlídač — přehled předplatných</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
   :root{
-    --ink-900:#12171B; --ink-800:#1A2126; --ink-700:#232B31; --ink-600:#323C43;
-    --line: rgba(245,240,230,0.09); --line-strong: rgba(245,240,230,0.16);
+    --ink-900:#F7F4EE; --ink-800:#FFFFFF; --ink-700:#F1EDE3; --ink-600:#E7E1D2;
+    --ink-solid:#211D17;
+    --line: rgba(28,22,14,0.09); --line-strong: rgba(28,22,14,0.17);
     --paper:#F5F0E4; --paper-dim:#E8E0CD;
-    --text:#EEEAE1; --text-dim:#9CA6AC; --text-faint:#6B747A;
-    --amber:#E8A33D; --amber-dim:#8A6A34; --sage:#7FA98D; --coral:#D9695F;
+    --text:#23201A; --text-dim:#6E6A5F; --text-faint:#A39D8C;
+    --amber:#C17F2A; --amber-dim:#A9762E; --sage:#4F8368; --coral:#B84B3D;
     --font-display:'Fraunces', Georgia, serif;
     --font-body:'Inter', -apple-system, sans-serif;
     --font-mono:'IBM Plex Mono', monospace;
@@ -22,12 +34,12 @@
   body{ background:var(--ink-900); color:var(--text); font-family:var(--font-body); -webkit-font-smoothing:antialiased; min-height:100vh; overflow-x:hidden; }
   html{ overflow-x:hidden; }
   a{ color:inherit; } button{ font-family:inherit; cursor:pointer; } input,select,textarea{ font-family:inherit; }
-  ::selection{ background:var(--amber); color:var(--ink-900); }
+  ::selection{ background:var(--amber); color:var(--ink-solid); }
 
   .shell{ display:flex; min-height:100vh; }
   .sidebar{ width:232px; flex-shrink:0; background:var(--ink-800); border-right:1px solid var(--line); padding:28px 18px; display:flex; flex-direction:column; position:fixed; top:0; left:0; bottom:0; overflow-y:auto; }
   .brand{ display:flex; align-items:center; gap:10px; padding:0 6px 26px; }
-  .brand-mark{ width:34px; height:34px; border-radius:50%; background: conic-gradient(from 200deg, var(--amber), var(--coral) 40%, var(--amber)); display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-weight:700; font-size:16px; color:var(--ink-900); flex-shrink:0; }
+  .brand-mark{ width:34px; height:34px; border-radius:50%; background: conic-gradient(from 200deg, var(--amber), var(--coral) 40%, var(--amber)); display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-weight:700; font-size:16px; color:var(--ink-solid); flex-shrink:0; }
   .brand-text{ font-family:var(--font-display); font-size:19px; font-weight:600; letter-spacing:-0.01em; }
   .nav{ display:flex; flex-direction:column; gap:2px; margin-top:6px; }
   .nav-item{ display:flex; align-items:center; gap:11px; padding:10px 12px; border-radius:8px; color:var(--text-dim); font-size:14px; font-weight:500; background:none; border:none; text-align:left; width:100%; transition:background .15s, color .15s; }
@@ -50,37 +62,37 @@
   .btn{ display:inline-flex; align-items:center; gap:7px; border-radius:8px; padding:10px 16px; font-size:13.5px; font-weight:600; border:1px solid transparent; transition:transform .1s, opacity .15s; }
   .btn svg{ width:15px; height:15px; }
   .btn:active{ transform:scale(0.97); }
-  .btn-primary{ background:var(--amber); color:var(--ink-900); }
+  .btn-primary{ background:var(--amber); color:var(--ink-solid); }
   .btn-primary:hover{ opacity:.9; }
   .btn-ghost{ background:transparent; border-color:var(--line-strong); color:var(--text); }
   .btn-ghost:hover{ border-color:var(--text-dim); }
   .btn-danger{ background:transparent; border-color:var(--coral); color:var(--coral); }
-  .btn-danger:hover{ background:rgba(217,105,95,0.1); }
+  .btn-danger:hover{ background:rgba(184,75,61,0.12); }
   .btn:disabled{ opacity:.45; cursor:not-allowed; }
   .btn-sm{ padding:7px 12px; font-size:12.5px; }
   .btn-block{ width:100%; justify-content:center; }
 
-  .receipt{ background:var(--paper); color:var(--ink-900); border-radius:6px; padding:0 30px 26px; position:relative; margin-bottom:26px; box-shadow:0 20px 40px -20px rgba(0,0,0,0.5); }
+  .receipt{ background:var(--ink-solid); color:var(--paper); border-radius:10px; padding:0 30px 26px; position:relative; margin-bottom:26px; box-shadow:0 20px 44px -18px rgba(33,29,23,0.35); }
   .receipt-perf{ height:12px; margin:0 -30px 8px; background-image: radial-gradient(circle 4px, var(--ink-900) 4px, transparent 4.5px); background-size:20px 12px; background-repeat:repeat-x; background-position:10px 0; opacity:.9; }
   .receipt-top{ display:flex; justify-content:space-between; align-items:flex-start; padding-top:6px; gap:24px; flex-wrap:wrap; }
-  .receipt-label{ font-family:var(--font-mono); font-size:11px; text-transform:uppercase; letter-spacing:.09em; color:#6b6250; margin-bottom:6px; }
+  .receipt-label{ font-family:var(--font-mono); font-size:11px; text-transform:uppercase; letter-spacing:.09em; color:rgba(245,240,228,0.6); margin-bottom:6px; }
   .receipt-num{ font-family:var(--font-display); font-size:52px; font-weight:600; line-height:1; letter-spacing:-0.02em; }
   .receipt-num span{ font-size:20px; font-family:var(--font-mono); font-weight:500; margin-left:4px; }
-  .receipt-sub{ font-family:var(--font-mono); font-size:12.5px; color:#6b6250; margin-top:8px; }
+  .receipt-sub{ font-family:var(--font-mono); font-size:12.5px; color:rgba(245,240,228,0.6); margin-top:8px; }
   .gauge-wrap{ display:flex; flex-direction:column; align-items:center; gap:6px; }
-  .gauge-caption{ font-family:var(--font-mono); font-size:11px; color:#6b6250; text-align:center; max-width:150px; }
-  .receipt-stats{ display:flex; gap:28px; margin-top:22px; padding-top:18px; border-top:1px dashed #c9bfa6; flex-wrap:wrap; }
-  .receipt-stat-label{ font-family:var(--font-mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.08em; color:#6b6250; }
+  .gauge-caption{ font-family:var(--font-mono); font-size:11px; color:rgba(245,240,228,0.6); text-align:center; max-width:150px; }
+  .receipt-stats{ display:flex; gap:28px; margin-top:22px; padding-top:18px; border-top:1px dashed rgba(245,240,228,0.25); flex-wrap:wrap; }
+  .receipt-stat-label{ font-family:var(--font-mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.08em; color:rgba(245,240,228,0.6); }
   .receipt-stat-val{ font-family:var(--font-display); font-size:19px; font-weight:600; margin-top:2px; }
 
   .grid-2{ display:grid; grid-template-columns:1.3fr 1fr; gap:20px; align-items:start; }
-  .card{ background:var(--ink-800); border:1px solid var(--line); border-radius:10px; padding:20px 22px; }
+  .card{ background:var(--ink-800); border:1px solid var(--line); border-radius:10px; padding:20px 22px; box-shadow:0 1px 2px rgba(33,29,23,0.04); }
   .card-title{ font-family:var(--font-display); font-size:16px; font-weight:600; margin:0 0 4px; }
   .card-desc{ font-size:12.5px; color:var(--text-dim); margin:0 0 14px; }
 
   .lineitem{ display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid var(--line); }
   .lineitem:last-child{ border-bottom:none; }
-  .stamp{ width:34px; height:34px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-weight:700; font-size:14px; color:var(--ink-900); }
+  .stamp{ width:34px; height:34px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-weight:700; font-size:14px; color:var(--ink-solid); }
   .li-name{ font-weight:600; font-size:14px; }
   .li-meta{ font-size:11.5px; color:var(--text-dim); margin-top:1px; font-family:var(--font-mono); }
   .li-leader{ flex:1; border-bottom:1px dotted var(--line-strong); margin:0 2px; height:1px; align-self:center; min-width:16px; }
@@ -122,7 +134,7 @@
 
   .modal-backdrop{ position:fixed; inset:0; background:rgba(10,13,15,0.7); backdrop-filter:blur(2px); display:flex; align-items:center; justify-content:center; z-index:100; padding:20px; animation:fadein .15s ease; }
   @keyframes fadein{ from{opacity:0} to{opacity:1} }
-  .modal{ background:var(--ink-800); border:1px solid var(--line-strong); border-radius:14px; width:100%; max-width:460px; max-height:88vh; overflow-y:auto; padding:26px 26px 22px; animation:modalin .18s cubic-bezier(.2,.8,.3,1); }
+  .modal{ background:var(--ink-800); border:1px solid var(--line-strong); border-radius:14px; width:100%; max-width:460px; max-height:88vh; overflow-y:auto; padding:26px 26px 22px; animation:modalin .18s cubic-bezier(.2,.8,.3,1); box-shadow:0 30px 70px -20px rgba(33,29,23,0.35); }
   @keyframes modalin{ from{opacity:0; transform:translateY(8px) scale(.98)} to{opacity:1; transform:translateY(0) scale(1)} }
   .modal-head{ display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:18px; }
   .modal-title{ font-family:var(--font-display); font-size:20px; font-weight:600; }
@@ -141,17 +153,17 @@
 
   .plan-cards{ display:flex; gap:12px; margin:16px 0; }
   .plan-card{ flex:1; border:1px solid var(--line-strong); border-radius:12px; padding:16px; }
-  .plan-card.hi{ border-color:var(--amber-dim); background:rgba(232,163,61,0.06); }
+  .plan-card.hi{ border-color:var(--amber-dim); background:rgba(193,127,42,0.08); }
   .plan-card h4{ font-family:var(--font-display); font-size:16px; margin:0 0 4px; }
   .plan-price{ font-family:var(--font-mono); font-size:13px; color:var(--text-dim); margin-bottom:10px; }
   .plan-card ul{ list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:7px; }
   .plan-card li{ display:flex; gap:7px; font-size:12.5px; color:var(--text-dim); align-items:flex-start; }
   .plan-card li svg{ width:13px; height:13px; margin-top:1.5px; flex-shrink:0; }
   .plan-card.hi li{ color:var(--text); }
-  .demo-note{ font-size:11px; color:var(--text-faint); background:var(--ink-900); border-radius:8px; padding:9px 11px; margin-top:14px; line-height:1.5; }
+  .demo-note{ font-size:11px; color:var(--text-dim); background:rgba(193,127,42,0.08); border:1px solid rgba(193,127,42,0.2); border-radius:8px; padding:9px 11px; margin-top:14px; line-height:1.5; }
 
   .toast-root{ position:fixed; top:20px; right:20px; z-index:200; display:flex; flex-direction:column; gap:8px; }
-  .toast{ background:var(--paper); color:var(--ink-900); padding:11px 16px; border-radius:8px; font-size:13px; font-weight:600; box-shadow:0 10px 25px rgba(0,0,0,0.35); animation:toastin .2s ease; max-width:300px; }
+  .toast{ background:var(--paper); color:var(--text); padding:11px 16px; border-radius:8px; font-size:13px; font-weight:600; box-shadow:0 10px 25px rgba(33,29,23,0.22); animation:toastin .2s ease; max-width:300px; }
   .toast.err{ background:var(--coral); color:var(--paper); }
   @keyframes toastin{ from{opacity:0; transform:translateX(12px)} to{opacity:1; transform:translateX(0)} }
 
@@ -161,16 +173,31 @@
   .kv-desc{ font-size:12px; color:var(--text-dim); margin-top:2px; }
 
   /* auth screen */
-  .auth-screen{ min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px; }
+  .auth-screen{ min-height:100vh; display:flex; align-items:stretch; justify-content:center; }
+  .auth-panel{ flex:1; max-width:520px; background:linear-gradient(160deg,#221E18,#2B251D); display:flex; flex-direction:column; justify-content:center; padding:60px; position:relative; overflow:hidden; }
+  .auth-panel-brand{ display:flex; align-items:center; gap:12px; margin-bottom:44px; }
+  .auth-panel-brand .brand-text{ color:#F5F0E4; font-size:22px; }
+  .auth-panel h1{ font-family:var(--font-display); font-weight:600; font-size:34px; color:#F5F0E4; line-height:1.2; margin:0 0 14px; }
+  .auth-panel p{ color:rgba(245,240,228,0.62); font-size:15px; line-height:1.6; margin:0 0 34px; max-width:380px; }
+  .auth-preview{ background:var(--ink-solid); border-radius:12px; padding:0 22px 20px; box-shadow:0 24px 50px -18px rgba(0,0,0,0.5); max-width:360px; }
+  .auth-preview .receipt-perf{ margin:0 -22px 8px; }
+  .auth-preview .receipt-label{ font-size:10px; }
+  .auth-preview .receipt-num{ font-size:34px; }
+  .auth-preview .receipt-num span{ font-size:15px; }
+  .auth-preview .receipt-sub{ font-size:11px; }
+  .auth-form-side{ flex:1; display:flex; align-items:center; justify-content:center; padding:20px; }
   .auth-card{ width:100%; max-width:380px; background:var(--ink-800); border:1px solid var(--line-strong); border-radius:14px; padding:30px 28px; }
   .auth-brand{ display:flex; align-items:center; gap:10px; margin-bottom:22px; }
-  .auth-tabs{ display:flex; gap:6px; background:var(--ink-900); border-radius:9px; padding:4px; margin-bottom:20px; }
+  .auth-tabs{ display:flex; gap:6px; background:var(--ink-700); border-radius:9px; padding:4px; margin-bottom:20px; }
   .auth-tab{ flex:1; text-align:center; padding:8px; border-radius:6px; font-size:13px; font-weight:600; color:var(--text-dim); background:none; border:none; }
-  .auth-tab.sel{ background:var(--ink-700); color:var(--text); }
-  .auth-error{ background:rgba(217,105,95,0.12); border:1px solid var(--coral); color:var(--coral); font-size:12.5px; border-radius:8px; padding:9px 11px; margin-bottom:14px; }
+  .auth-tab.sel{ background:var(--ink-800); color:var(--text); box-shadow:0 1px 4px rgba(33,29,23,0.12); }
+  .auth-error{ background:rgba(184,75,61,0.14); border:1px solid var(--coral); color:var(--coral); font-size:12.5px; border-radius:8px; padding:9px 11px; margin-bottom:14px; }
+  @media (max-width: 900px){
+    .auth-panel{ display:none; }
+  }
   .auth-hint{ font-size:11.5px; color:var(--text-faint); margin-top:14px; line-height:1.5; text-align:center; }
 
-  .spinner{ width:16px; height:16px; border-radius:50%; border:2px solid rgba(18,23,27,0.25); border-top-color:var(--ink-900); animation:spin .7s linear infinite; display:inline-block; }
+  .spinner{ width:16px; height:16px; border-radius:50%; border:2px solid rgba(33,29,23,0.25); border-top-color:var(--ink-solid); animation:spin .7s linear infinite; display:inline-block; }
   @keyframes spin{ to{ transform:rotate(360deg); } }
 
   /* ---------- responsive: tablet ---------- */
@@ -270,8 +297,8 @@ const FREE_LIMIT = 5;
 ================================================================================ */
 const AFFILIATE_OFFERS = {
   streaming: { name:'Levnější streamovací balíček', pitch:'Porovnej kombinované balíčky — často vyjdou levněji než 2–3 služby zvlášť.', url:'#' },
-  vpn:       { name:'Doporučená VPN služba', pitch:'Roční plán bývá výrazně levnější než měsíční platba.', url:'#' },
-  pojisteni: { name:'Srovnání pojištění online', pitch:'Nech si porovnat nabídky víc pojišťoven během pár minut.', url:'#' },
+  vpn:       { name:'NordVPN', pitch:'Roční plán bývá výrazně levnější než měsíční platba. (Affiliate program: nordvpn.com/affiliate)', url:'#' },
+  pojisteni: { name:'Srovnání pojištění online', pitch:'Nech si porovnat nabídky víc pojišťoven během pár minut. (Zkus kampaně na pojištění v síti Dognet.cz)', url:'#' },
   fitness:   { name:'Fitness aplikace / permanentka', pitch:'Zvaž appku s cvičením doma místo drahého členství.', url:'#' },
 };
 
@@ -312,6 +339,7 @@ let state = {
   authMode:'signin',
   authError:'',
   authBusy:false,
+  passwordRecovery:false,
   importRows:null,
   importHeaders:null,
   importCandidates:[],
@@ -361,7 +389,12 @@ async function initAuth(){
   state.ready = true;
   render();
 
-  supabase.auth.onAuthStateChange(async (_event, session)=>{
+  supabase.auth.onAuthStateChange(async (event, session)=>{
+    if(event === 'PASSWORD_RECOVERY'){
+      state.passwordRecovery = true;
+      render();
+      return;
+    }
     const nextUser = session?.user || null;
     const wasLoggedIn = !!state.user;
     state.user = nextUser;
@@ -389,6 +422,43 @@ async function handleAuthSubmit(e){
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if(error) throw error;
     }
+  }catch(err){
+    state.authError = translateAuthError(err.message);
+  }
+  state.authBusy = false; render();
+  return false;
+}
+async function handleResetRequest(e){
+  e.preventDefault();
+  const f = e.target;
+  const email = f.email.value.trim();
+  state.authBusy = true; state.authError = ''; render();
+  try{
+    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.href.split('#')[0].split('?')[0] });
+    if(error) throw error;
+    toast('Pokud účet s tímto e-mailem existuje, poslali jsme na něj odkaz na obnovení hesla.');
+    state.authMode = 'signin';
+  }catch(err){
+    state.authError = translateAuthError(err.message);
+  }
+  state.authBusy = false; render();
+  return false;
+}
+async function handleSetNewPassword(e){
+  e.preventDefault();
+  const f = e.target;
+  const password = f.password.value;
+  const password2 = f.password2.value;
+  if(password !== password2){ state.authError = 'Hesla se neshodují.'; render(); return false; }
+  state.authBusy = true; state.authError = ''; render();
+  try{
+    const { error } = await supabase.auth.updateUser({ password });
+    if(error) throw error;
+    state.passwordRecovery = false;
+    toast('Heslo bylo změněno, jsi přihlášen/a.');
+    const { data:{ session } } = await supabase.auth.getSession();
+    state.user = session?.user || null;
+    if(state.user) await loadUserData();
   }catch(err){
     state.authError = translateAuthError(err.message);
   }
@@ -480,6 +550,7 @@ function render(){
     app.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;color:var(--text-dim);font-family:var(--font-mono);font-size:13px;">Načítám…</div>`;
     return;
   }
+  if(state.passwordRecovery){ renderSetNewPasswordScreen(); return; }
   if(!state.user){ renderAuthScreen(); return; }
 
   const notifCount = upcomingRenewals(7).length;
@@ -527,11 +598,54 @@ function renderView(){
 }
 
 /* ============================= AUTH SCREEN ============================= */
+function authMarketingPanelHTML(){
+  return `
+    <div class="auth-panel">
+      <div class="auth-panel-brand"><div class="brand-mark">S</div><div class="brand-text">SubHlídač</div></div>
+      <h1>Všechna tvá předplatná.<br>Na jednom místě.</h1>
+      <p>Přehled výdajů, upozornění na blížící se obnovení a tipy, kde ušetřit — dřív, než si to všimneš na výpisu z účtu.</p>
+      <div class="auth-preview receipt" style="margin-bottom:0;">
+        <div class="receipt-perf"></div>
+        <div class="receipt-label">Měsíční výdaje celkem</div>
+        <div class="receipt-num">1 247 Kč<span>/ měsíc</span></div>
+        <div class="receipt-sub">≈ 14 964 Kč ročně · 7 položek</div>
+      </div>
+    </div>
+  `;
+}
 function renderAuthScreen(){
   const app = document.getElementById('app');
   const isSignup = state.authMode === 'signup';
+  const isReset = state.authMode === 'reset';
+
+  if(isReset){
+    app.innerHTML = `
+      <div class="auth-screen">
+        ${authMarketingPanelHTML()}
+        <div class="auth-form-side">
+        <div class="auth-card">
+          <div class="auth-brand"><div class="brand-mark">S</div><div class="brand-text">SubHlídač</div></div>
+          <div class="modal-title" style="font-size:17px; margin-bottom:6px;">Obnovení hesla</div>
+          <div class="card-desc" style="margin-bottom:16px;">Pošleme ti e-mail s odkazem na nastavení nového hesla.</div>
+          ${state.authError ? `<div class="auth-error">${escapeHTML(state.authError)}</div>` : ''}
+          <form onsubmit="return window.__app.handleResetRequest(event)">
+            <div class="field"><label>E-mail</label><input class="input" type="email" name="email" required autocomplete="email"></div>
+            <button type="submit" class="btn btn-primary btn-block" ${state.authBusy?'disabled':''}>
+              ${state.authBusy ? '<span class="spinner"></span>' : 'Poslat odkaz na obnovení'}
+            </button>
+          </form>
+          <div class="auth-hint"><button type="button" onclick="window.__app.setAuthMode('signin')" style="background:none;border:none;color:var(--text-dim);text-decoration:underline;cursor:pointer;font-size:11.5px;">Zpět na přihlášení</button></div>
+        </div>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
   app.innerHTML = `
     <div class="auth-screen">
+      ${authMarketingPanelHTML()}
+      <div class="auth-form-side">
       <div class="auth-card">
         <div class="auth-brand"><div class="brand-mark">S</div><div class="brand-text">SubHlídač</div></div>
         <div class="auth-tabs">
@@ -546,7 +660,32 @@ function renderAuthScreen(){
             ${state.authBusy ? '<span class="spinner"></span>' : (isSignup ? 'Vytvořit účet' : 'Přihlásit se')}
           </button>
         </form>
-        <div class="auth-hint">${isSignup ? 'Data uvidíš jen ty — po registraci se rovnou přihlásíš (případně počkej na potvrzovací e-mail, pokud ho projekt vyžaduje).' : 'Ještě nemáš účet? Přepni se nahoře na „Vytvořit účet“.'}</div>
+        ${!isSignup ? `<div style="text-align:center; margin-top:12px;"><button type="button" onclick="window.__app.setAuthMode('reset')" style="background:none;border:none;color:var(--text-faint);text-decoration:underline;cursor:pointer;font-size:11.5px;">Zapomenuté heslo?</button></div>` : ''}
+        <div class="auth-hint">${isSignup ? 'Data uvidíš jen ty — po registraci se rovnou přihlásíš (případně počkej na potvrzovací e-mail, pokud ho projekt vyžaduje). Registrací souhlasíš, že appka uloží tvůj e-mail a zadané předplatné do databáze projektu.' : 'Ještě nemáš účet? Přepni se nahoře na „Vytvořit účet“.'}</div>
+      </div>
+      </div>
+    </div>
+  `;
+}
+function renderSetNewPasswordScreen(){
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <div class="auth-screen">
+      ${authMarketingPanelHTML()}
+      <div class="auth-form-side">
+      <div class="auth-card">
+        <div class="auth-brand"><div class="brand-mark">S</div><div class="brand-text">SubHlídač</div></div>
+        <div class="modal-title" style="font-size:17px; margin-bottom:6px;">Nastav nové heslo</div>
+        <div class="card-desc" style="margin-bottom:16px;">Zadej nové heslo ke svému účtu.</div>
+        ${state.authError ? `<div class="auth-error">${escapeHTML(state.authError)}</div>` : ''}
+        <form onsubmit="return window.__app.handleSetNewPassword(event)">
+          <div class="field"><label>Nové heslo</label><input class="input" type="password" name="password" required minlength="6" autocomplete="new-password"></div>
+          <div class="field"><label>Nové heslo znovu</label><input class="input" type="password" name="password2" required minlength="6" autocomplete="new-password"></div>
+          <button type="submit" class="btn btn-primary btn-block" ${state.authBusy?'disabled':''}>
+            ${state.authBusy ? '<span class="spinner"></span>' : 'Uložit nové heslo'}
+          </button>
+        </form>
+      </div>
       </div>
     </div>
   `;
@@ -558,11 +697,11 @@ function gaugeSVG(pct, hasBudget){
   const p = Math.max(0, Math.min(1, pct));
   const circumference = Math.PI * 46;
   const dash = circumference * p;
-  const color = p < 0.75 ? '#7FA98D' : (p < 1 ? '#E8A33D' : '#D9695F');
+  const color = p < 0.75 ? '#5FA083' : (p < 1 ? '#E0A64C' : '#D46A57');
   return `<svg width="120" height="72" viewBox="0 0 120 72">
-    <path d="M 14 60 A 46 46 0 0 1 106 60" fill="none" stroke="#DCD4BC" stroke-width="9" stroke-linecap="round"/>
+    <path d="M 14 60 A 46 46 0 0 1 106 60" fill="none" stroke="rgba(245,240,228,0.22)" stroke-width="9" stroke-linecap="round"/>
     ${hasBudget ? `<path d="M 14 60 A 46 46 0 0 1 106 60" fill="none" stroke="${color}" stroke-width="9" stroke-linecap="round" stroke-dasharray="${dash} ${circumference}"/>` : ''}
-    <text x="60" y="52" text-anchor="middle" font-family="IBM Plex Mono" font-size="15" font-weight="600" fill="#12171B">${hasBudget? Math.round(p*100)+'%':'—'}</text>
+    <text x="60" y="52" text-anchor="middle" font-family="IBM Plex Mono" font-size="15" font-weight="600" fill="#F5F0E4">${hasBudget? Math.round(p*100)+'%':'—'}</text>
   </svg>`;
 }
 function viewDashboard(){
@@ -733,7 +872,7 @@ function viewNotifications(){
       <div class="card-title">Nadcházející obnovení (14 dní)</div>
       ${upcoming.length ? upcoming.map(s=>`
         <div class="notif">
-          <div class="notif-icon" style="background:rgba(232,163,61,0.12); color:var(--amber);">${ICONS.calendar}</div>
+          <div class="notif-icon" style="background:rgba(193,127,42,0.14); color:var(--amber);">${ICONS.calendar}</div>
           <div><div class="notif-title">${escapeHTML(s.name)} se obnoví ${daysLabel(s.d).toLowerCase()}</div><div class="notif-desc">${fmtDate(s.next_renewal)} · strhne se ${fmtMoney(s.price)}</div></div>
         </div>`).join('') : `<div style="color:var(--text-dim); font-size:13px; padding:6px 0;">Žádná obnovení v nejbližších 14 dnech.</div>`}
     </div>
@@ -744,7 +883,7 @@ function viewNotifications(){
         <button class="btn btn-ghost btn-sm" onclick="window.__app.openUpgrade()">${ICONS.crown} Odemknout v Premium</button>
       ` : unused.length ? unused.map(s=>`
         <div class="notif">
-          <div class="notif-icon" style="background:rgba(217,105,95,0.12); color:var(--coral);">${ICONS.alert}</div>
+          <div class="notif-icon" style="background:rgba(184,75,61,0.14); color:var(--coral);">${ICONS.alert}</div>
           <div>
             <div class="notif-title">${escapeHTML(s.name)} — nepoužito ${-daysUntil(s.last_used)} dní</div>
             <div class="notif-desc">Stojí tě ${fmtMoney(monthlyEq(s))} měsíčně. Zvaž zrušení.</div>
@@ -900,6 +1039,7 @@ function pickCategory(id, ev){
 async function submitSubForm(e, id){
   e.preventDefault();
   const f = e.target;
+  const submitBtn = f.querySelector('button[type="submit"]');
   const payload = {
     name: f.name.value.trim(),
     price: parseFloat(f.price.value),
@@ -910,15 +1050,16 @@ async function submitSubForm(e, id){
     notes: f.notes.value.trim(),
   };
   if(!payload.name || isNaN(payload.price) || !payload.next_renewal) return false;
+  if(submitBtn) submitBtn.disabled = true;
 
   if(id){
     const { error } = await supabase.from('subscriptions').update(payload).eq('id', id);
-    if(error){ toast('Uložení se nezdařilo.', true); return false; }
+    if(error){ toast('Uložení se nezdařilo.', true); if(submitBtn) submitBtn.disabled = false; return false; }
     state.subs = state.subs.map(s=>s.id===id ? Object.assign({}, s, payload) : s);
     toast('Předplatné upraveno');
   } else {
     const { data, error } = await supabase.from('subscriptions').insert(Object.assign({ user_id: state.user.id }, payload)).select().single();
-    if(error){ toast('Přidání se nezdařilo.', true); return false; }
+    if(error){ toast('Přidání se nezdařilo.', true); if(submitBtn) submitBtn.disabled = false; return false; }
     state.subs.push(data);
     toast('Předplatné přidáno');
   }
@@ -955,8 +1096,15 @@ function openUpgrade(){
       <div class="plan-card hi"><h4>Premium</h4><div class="plan-price">49 Kč / měsíc</div>
         <ul><li>${ICONS.check} Neomezený počet předplatných</li><li>${ICONS.check} Přehled nevyužívaných předplatných</li><li>${ICONS.check} Export dat do CSV</li></ul></div>
     </div>
+    <!--
+      TODO(STRIPE): Až budeš mít Stripe Checkout link/produkt hotový, nahraď tlačítko níže
+      odkazem na Stripe (např. <a class="btn btn-primary btn-block" href="TVUJ_STRIPE_LINK">…</a>),
+      a premium pak nastavuj až podle Stripe webhooku (checkout.session.completed →
+      update profiles set premium=true kde id = klíč, co si předáš přes client_reference_id).
+      Tohle tlačítko teď premium nastavuje rovnou — je to demo aktivace bez placení.
+    -->
     <button class="btn btn-primary btn-block" onclick="window.__app.togglePremium(true)">${ICONS.crown} Aktivovat Premium</button>
-    <div class="demo-note">Tohle je funkční demo aktivace uložená přímo v tvém Supabase účtu — zatím bez napojení na skutečnou platební bránu. Pro ostrý provoz stačí toto tlačítko nahradit voláním na Stripe Checkout a označit premium přes webhook.</div>
+    <div class="demo-note">Tohle je funkční demo aktivace uložená přímo v tvém Supabase účtu — zatím bez napojení na skutečnou platební bránu. Pro ostrý provoz stačí toto tlačítko nahradit odkazem na Stripe Checkout a premium nastavovat přes webhook.</div>
   `);
 }
 async function togglePremium(on){
@@ -1238,6 +1386,7 @@ window.__app = {
   openUpgrade, togglePremium, closeModal, saveBudget, exportCSV, confirmWipe,
   wipeAll, signOut, setAuthMode, handleAuthSubmit,
   openImportModal, confirmMapping, confirmImportCandidates,
+  handleResetRequest, handleSetNewPassword,
 };
 
 initAuth();
